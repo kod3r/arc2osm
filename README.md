@@ -1,4 +1,10 @@
-arc2osm
-=======
+# arc2osm
 
-A Node.js app that inserts data coming from an ArcGIS Server feature service into an OpenStreetMap database.
+A Node.js app that inserts data coming from ArcGIS Server feature and/or map services into an OpenStreetMap database.
+
+## Installation
+
+1. Install Node.js
+2. Clone repository
+3. cd into repository
+4. Run npm install

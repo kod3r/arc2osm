@@ -1,0 +1,11 @@
+{
+  "name": "arc2osm",
+  "description": "Inserts data coming from ArcGIS Server feature and/or map services into an OpenStreetMap database.",
+  "version": "0.1.0",
+  "dependencies": {
+    "request": "2.27.0"
+  },
+  "engines": {
+    "node": "*"
+  }
+}

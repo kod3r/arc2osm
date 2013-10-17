@@ -1,0 +1,24 @@
+{
+  "arcGisServer": [{
+    /*
+    "fields": {
+      "created": null,
+      "edited": null,
+      "key": "GlobalID"
+    },
+    "name": "Roads",
+    "query": "FeatureCategory='Roads'",
+    "transform": "roads",
+    "url": "http://insidemapservices.nps.gov/arcgis/rest/services/Facilities/Point/MapServer/1"
+  },{
+    */
+    "fields": {
+      "created": "Source_Date",
+      "edited": "Edit_Date",
+      "key": "Geometry_ID"
+    },
+    "name": "Buildings",
+    "transform": "building",
+    "url": "http://insidemapservices.nps.gov/arcgis/rest/services/Buildings/MapServer/1"
+  }]
+}
