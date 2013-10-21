@@ -9,6 +9,13 @@ var completed = 0,
     request = require('request'),
     status = require('./status.json');
 
+function handleResponse(error, response, callback) {
+  if (!error && response.statusCode === 200) {
+    callback(response);
+  } else {
+    console.log(response.statusCode + ': ' + error);
+  }
+}
 function queryPaged(max, objectIds, url, callback) {
   var data = [],
       ids;
@@ -22,7 +29,7 @@ function queryPaged(max, objectIds, url, callback) {
   }
 
   request(url + '&objectIds=' + ids.join(',') + '&outFields=*', function(error, response) {
-    if (!error && response.statusCode === 200) {
+    handleResponse(error, response, function(response) {
       data.push(JSON.parse(response.body));
 
       if (objectIds.length >= max) {
@@ -31,9 +38,7 @@ function queryPaged(max, objectIds, url, callback) {
       } else {
         callback(data);
       }
-    } else {
-      console.log(url + '&objectIds=' + ids.join(',') + '&outFields=*');
-    }
+    });
   });
 }
 
@@ -41,59 +46,33 @@ for (var i = 0; i < count; i++) {
   (function() {
     var arcGisServer = config.arcGisServer[i];
 
+    console.log(arcGisServer.url + '/query?f=json&where=' + (arcGisServer.query ? arcGisServer.query : 'OBJECTID IS NOT NULL') + '&returnIdsOnly=true');
     request(arcGisServer.url + '/query?f=json&where=' + (arcGisServer.query ? arcGisServer.query : 'OBJECTID IS NOT NULL') + '&returnIdsOnly=true', function(error, response) {
-      if (!error && response.statusCode === 200) {
+      handleResponse(error, response, function(response) {
         var objectIds = JSON.parse(response.body).objectIds;
 
-        request(arcGisServer.url + '?f=json', function(error, response) {
-          if (!error && response.statusCode === 200) {
-            //var max = JSON.parse(response.body).maxRecordCount;
+        if (objectIds) {
+          request(arcGisServer.url + '?f=json', function(error, response) {
+            handleResponse(error, response, function(response) {
+              //var max = JSON.parse(response.body).maxRecordCount;
 
-            queryPaged(500, objectIds, arcGisServer.url + '/query?f=json', function(data) {
-              //console.log(data);
-              completed++;
+              queryPaged(500, objectIds, arcGisServer.url + '/query?f=json', function(data) {
+                //console.log(data);
+                completed++;
+              });
             });
-          }
-        });
-      }
+          });
+        } else {
+          completed++;
+        }
+      });
     });
   })();
 }
 
 interval = setInterval(function() {
-  if (count === completed) {
+  if (completed === count) {
     clearInterval(interval);
     console.log('done');
   }
 }, 1000);
-
-/*
-request(arcGisServer.url + '?f=json&outFields=*&query=' + (arcGisServer.query ? arcGisServer.query : 'OBJECTID IS NOT NULL'), function(error, response) {
-  if (!error && response.statusCode === 200) {
-    (function() {
-      var geoJson = converter.toGeoJson(JSON.parse(response.body)),
-          transform;
-
-      if (arcGisServer.transform) {
-        transform = require('./transforms/' + arcGisServer.transform);
-      }
-
-      for (var j = 0; j < geoJson.features.length; j++) {
-        var feature = geoJson.features[j];
-
-        if (transform) {
-          feature = transform.toOsm(feature);
-        }
-
-        console.log(feature);
-
-        // TODO: Query database for this record, based on contents of key field.
-        // If no records are found, insert. If a record is found, update.
-        // What about deletes? Should you maintain a list of all keys and track deletes, etc.?
-      }
-    })();
-  }
-
-  completed++;
-});
-*/
