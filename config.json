@@ -3,11 +3,10 @@
     "fields": {
       "created": null,
       "edited": null,
-      "key": "GlobalID"
+      "key": "OBJECTID"
     },
-    "name": "Roads",
-    "query": "FeatureCategory='Roads'",
+    "name": "tracts",
     "transform": "roads",
-    "url": "http://insidemapservices.nps.gov/arcgis/rest/services/Facilities/Point/MapServer/1"
+    "url": "http://services.arcgisonline.com/ArcGIS/rest/services/Demographics/USA_Unemployment_Rate/MapServer/1"
   }]
 }
